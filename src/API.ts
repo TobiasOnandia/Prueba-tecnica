@@ -1,1 +1,1 @@
-export const API = "https://randomuser.me/api/?results=10";
+export const API = `https://randomuser.me/api/?results=10`;

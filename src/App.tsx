@@ -1,14 +1,25 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { TableBody } from "./components/TableBody";
-import { useUsers } from "./services/useUsers";
-
+import { fetchUsers } from "./services/fetchUsers";
+import { User } from "./types.d";
 function App() {
   const [toggleColor, setToggleColor] = useState(false);
   const [toggleSort, setToggleSort] = useState(false);
   const [filterCountry, setFilteredCountry] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
+  const ref = useRef<User[]>([]);
 
-  const { ref, users, setUsers } = useUsers();
+  useEffect(() => {
+    fetchUsers(currentPage).then((user) => {
+      setUsers((prevUser) => {
+        const newUser = prevUser.concat(user);
+        ref.current = newUser;
+        return newUser;
+      });
+    });
+  }, [currentPage]);
 
   const handleClick = () => {
     setToggleColor(!toggleColor);
@@ -78,6 +89,16 @@ function App() {
           sortedUsers={sortedUsers}
         />
       </table>
+
+      <footer>
+        <button
+          onClick={() => {
+            setCurrentPage((a) => a + 1);
+          }}
+        >
+          Cargar mas usuarios
+        </button>
+      </footer>
     </div>
   );
 }
